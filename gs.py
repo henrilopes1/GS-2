@@ -82,6 +82,26 @@ def mostrarDicasPersonalizadas(emocional):
 
     # Adicione lógica semelhante para as outras emoções
 
+# Função para salvar sugestões no arquivo JSON
+def salvarSugestao(titulo, mensagem):
+    with open("sugestoes.json", "r") as sugestoes_json:
+        sugestoes = json.load(sugestoes_json)
+
+    sugestoes.append({"Titulo": titulo, "Mensagem": mensagem})
+
+    with open("sugestoes.json", "w") as sugestoes_json:
+        json.dump(sugestoes, sugestoes_json)
+
+# Função para mostrar sugestões
+def mostrarSugestoes():
+    with open("sugestoes.json", "r") as sugestoes_json:
+        sugestoes = json.load(sugestoes_json)
+
+    print("\nSugestões:")
+    for idx, sugestao in enumerate(sugestoes, start=1):
+        print(f"{idx}. Título: {sugestao['Titulo']}")
+        print(f"   Mensagem: {sugestao['Mensagem']}\n")
+
 # Verificar se o arquivo JSON de dados existe
 if not os.path.exists("dados_mindwell.json"):
     with open("dados_mindwell.json", "w") as dados_mindwell_json:
@@ -90,6 +110,11 @@ if not os.path.exists("dados_mindwell.json"):
 # Carregar dados do arquivo JSON
 with open("dados_mindwell.json", "r") as dados_mindwell_json:
     dados_mindwell = json.load(dados_mindwell_json)
+
+# Verificar se o arquivo JSON de sugestões existe
+if not os.path.exists("sugestoes.json"):
+    with open("sugestoes.json", "w") as sugestoes_json:
+        json.dump([], sugestoes_json)
 
 # Perguntar se a pessoa deseja fazer o cadastro
 cadastro = input('\nVocê é um novo usuário? (Digite "sim" ou "não"): ')
@@ -150,7 +175,14 @@ while ligado:
         voltandoMenu('Principal')
 
     elif resp == 3:  # Menu sugestões
-        print("Implemente a lógica para enviar sugestões aqui.")
+        print('\n')
+        titulo_sugestao = input("Digite o título da sugestão: ")
+        mensagem_sugestao = input("Digite a mensagem da sugestão: ")
+
+        salvarSugestao(titulo_sugestao, mensagem_sugestao)
+
+        print("Sugestão enviada com sucesso!")
+        mostrarSugestoes()
         voltandoMenu('Principal')
 
     elif resp == 4:  # Menu dicas personalizadas
