@@ -79,7 +79,23 @@ def mostrarDicasPersonalizadas(emocional):
         print("Mantenha-se ativo fisicamente, incorporando exercícios regulares à sua rotina.")
         print("Estabeleça metas realistas e celebre suas conquistas, por menores que sejam.")
         print("Mantenha uma dieta equilibrada para sustentar níveis de energia consistentes.")
-    # Adicione lógica semelhante para as outras emoções
+    elif emocional == "2":
+        print("Dedique tempo para atividades que trazem alegria e relaxamento.")
+        print("Cultive relacionamentos positivos e mantenha uma mentalidade otimista.")
+    elif emocional == "3":
+        print("Priorize o descanso e o sono adequado para recuperar a energia.")
+        print("Considere a prática de atividades relaxantes antes de dormir.")
+    elif emocional == "4":
+        print("Pratique técnicas de respiração profunda para acalmar a mente.")
+        print("Divida grandes tarefas em passos menores para reduzir a ansiedade.")
+    elif emocional == "5":
+        print("Permita-se sentir e expressar suas emoções de maneira saudável.")
+        print("Busque o apoio de amigos, familiares ou profissionais quando necessário.")
+    elif emocional == "6":
+        print("Identifique gatilhos de irritação e desenvolva estratégias para lidar com eles.")
+        print("Pratique a comunicação assertiva para expressar seus sentimentos de forma construtiva.")
+    else:
+        print("Emoção não reconhecida. Tente novamente.")
 
 # Função para mostrar dicas de acordo com o problema escolhido
 def mostrarDicasProblema(problema):
@@ -91,7 +107,43 @@ def mostrarDicasProblema(problema):
         print("Converse com alguém de confiança sobre seus sentimentos.")
         print("Considere procurar a ajuda de um profissional, como um psicólogo.")
         print("Pratique técnicas de relaxamento, como meditação ou respiração profunda.")
-    # Adicione lógica semelhante para os outros problemas
+    elif problema == "2":
+        print("Estabeleça metas claras e alcançáveis para reduzir o estresse.")
+        print("Pratique técnicas de gestão do tempo para organizar suas tarefas.")
+        print("Envolva-se em atividades relaxantes, como hobbies ou leitura.")
+    elif problema == "3":
+        print("Permita-se sentir tristeza, mas procure atividades que tragam alegria.")
+        print("Converse com amigos ou familiares sobre seus sentimentos.")
+        print("Considere buscar a orientação de um profissional de saúde mental.")
+    elif problema == "4":
+        print("Abra o diálogo com a outra pessoa, expressando seus sentimentos.")
+        print("Busque aconselhamento de um terapeuta ou conselheiro de relacionamento.")
+        print("Trabalhe na comunicação eficaz e no entendimento mútuo.")
+    elif problema == "5":
+        print("Seja específico sobre o problema e identifique possíveis soluções.")
+        print("Considere buscar a ajuda de um mentor ou coach.")
+        print("Priorize o autocuidado e a gestão do estresse.")
+    else:
+        print("Problema não reconhecido. Tente novamente.")
+
+# Função para salvar sugestão no arquivo JSON
+def salvarSugestao(titulo, mensagem):
+    sugestoes = []
+
+    # Verificar se o arquivo JSON de sugestões existe e não está vazio
+    if os.path.exists("sugestoes.json") and os.path.getsize("sugestoes.json") > 0:
+        with open("sugestoes.json", "r") as sugestoes_json:
+            try:
+                sugestoes = json.load(sugestoes_json)
+            except json.decoder.JSONDecodeError:
+                # Tratar caso o arquivo esteja vazio ou não seja um JSON válido
+                print("Erro ao carregar sugestões. O arquivo pode estar vazio ou não contém JSON válido.")
+
+    sugestao = {"titulo": titulo, "mensagem": mensagem}
+    sugestoes.append(sugestao)
+
+    with open("sugestoes.json", "w") as sugestoes_json:
+        json.dump(sugestoes, sugestoes_json)
 
 # Verificar se o arquivo JSON de dados existe
 if not os.path.exists("dados_mindwell.json"):
@@ -124,7 +176,26 @@ if cadastro.lower() == 'sim':
     with open("dados_mindwell.json", "w") as dados_mindwell_json:
         json.dump(dados_mindwell, dados_mindwell_json)
 
-# Loop principal
+else:
+    # Se não for um novo usuário, solicitar o nome novamente
+    nome = input('Digite seu nome: ')
+
+    # Verificar se o nome já existe no arquivo JSON
+    if nome in dados_mindwell:
+        emocional = dados_mindwell.get(nome, {}).get("Emocional", "")
+        ultima_atividade = dados_mindwell.get(nome, {}).get("UltimaAtividade", "")
+        sugestao_personalizada = dados_mindwell.get(nome, {}).get("SugestaoPersonalizada", "")
+
+        # Exibir informações do usuário
+        print(f'\nBem-vindo de volta, {nome}!')
+        print(f'Seu estado emocional atual é: {emocional.capitalize()}')
+        print(f'Última atividade registrada: {ultima_atividade}')
+        print(f'Sugestão personalizada anterior: {sugestao_personalizada}')
+
+    else:
+        print("Nome não encontrado. Por favor, faça o cadastro.")
+
+   # Loop principal
 ligado = True
 while ligado:
     tam_titulo = tamProg()
@@ -135,16 +206,15 @@ while ligado:
     linDetalhe(tam_titulo // 2)
     print()
 
-    frase = len('[4] Dicas Personalizadas')
+    frase = len('[3] Dicas Personalizadas')
     tam_opcoes = ((tam_titulo - (frase)) // 2)
     print()
     linSimples(tam_titulo)
     print(f'\n{"MENU PRINCIPAL":^{tam_titulo}}\n')
     print(' ' * (tam_opcoes - 4), '-' * (frase + 6))
-    print(' ' * (tam_opcoes - 1), '[1] Notificações')
-    print(' ' * (tam_opcoes - 1), '[2] Preciso de ajuda')
-    print(' ' * (tam_opcoes - 1), '[3] Enviar sugestões')
-    print(' ' * (tam_opcoes - 1), '[4] Dicas Personalizadas')
+    print(' ' * (tam_opcoes - 1), '[1] Preciso de ajuda')
+    print(' ' * (tam_opcoes - 1), '[2] Enviar sugestões')
+    print(' ' * (tam_opcoes - 1), '[3] Dicas Personalizadas')
     print(' ' * (tam_opcoes - 4), '-' * (frase + 6))
     print('\n')
     linSimples(tam_titulo)
@@ -157,11 +227,7 @@ while ligado:
     resp = tratarErro(resp, 'int')
 
     sleep(1)
-    if resp == 1:  # Menu notificações
-        print("Implemente a lógica para notificações aqui.")
-        voltandoMenu('Principal')
-
-    elif resp == 2:  # Menu ajuda
+    if resp == 1:  # Menu ajuda
         print('\n')
         print("Como posso ajudar você hoje?")
         print("1. Preciso lidar com o estresse.")
@@ -178,7 +244,7 @@ while ligado:
         menuSairVoltar()
         voltandoMenu('Principal')
 
-    elif resp == 3:  # Menu sugestões
+    elif resp == 2:  # Menu sugestões
         print('\n')
         titulo_sugestao = input("Digite o título da sugestão: ")
         mensagem_sugestao = input("Digite a mensagem da sugestão: ")
@@ -188,7 +254,7 @@ while ligado:
         print("Sugestão enviada com sucesso!")
         voltandoMenu('Principal')
 
-    elif resp == 4:  # Menu dicas personalizadas
+    elif resp == 3:  # Menu dicas personalizadas
         print('\n')
         emocional = dados_mindwell.get(nome, {}).get("Emocional", "")
         mostrarDicasPersonalizadas(emocional)
